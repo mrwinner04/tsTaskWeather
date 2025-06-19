@@ -4,7 +4,7 @@ import { UserWeatherData } from "../ui/ui.types.js";
 import { Logger } from "../utils/logger.js";
 
 /**
- * Converter for transforming user data to combined user-weather data
+ * Converter for  user data to combined user-weather data
  */
 export class UserWeatherConverter {
   /**
