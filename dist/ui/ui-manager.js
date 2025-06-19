@@ -56,7 +56,7 @@ export class UIManager {
             const cachedWeatherData = CacheManager.getItem(CacheManager.CACHE_KEYS.WEATHER);
             if (cachedWeatherData) {
                 Logger.info("📦 Found cached weather data");
-                this.renderFromCache(cachedUsers, cachedWeatherData);
+                await this.renderFromCache(cachedUsers, cachedWeatherData);
                 // Start auto-refresh
                 this.autoRefreshManager.start();
                 // Check if we need to refresh weather data
@@ -74,18 +74,19 @@ export class UIManager {
     /**
      * Render UI from cached data
      */
-    renderFromCache(users, weatherDataArray) {
+    async renderFromCache(users, weatherDataArray) {
         this.clearUserCards();
         this.currentUserData = [];
-        users.forEach((user, index) => {
-            const weatherData = weatherDataArray[index] || null;
+        for (let i = 0; i < users.length; i++) {
+            const user = users[i];
+            const weatherData = weatherDataArray[i] || null;
             const userWeatherData = {
                 user,
                 weather: weatherData,
             };
             this.currentUserData.push(userWeatherData);
-            this.addUserCard(userWeatherData);
-        });
+            await this.addUserCard(userWeatherData);
+        }
         Logger.success(`✅ Rendered ${users.length} users from cache`);
     }
     /**
@@ -103,7 +104,7 @@ export class UIManager {
                 try {
                     const userWeatherData = await UserWeatherConverter.convertUserToUserWeatherData(user);
                     this.currentUserData.push(userWeatherData);
-                    this.addUserCard(userWeatherData);
+                    await this.addUserCard(userWeatherData);
                 }
                 catch (error) {
                     Logger.error("Error processing user:", error);
@@ -112,7 +113,7 @@ export class UIManager {
                         weather: null,
                     };
                     this.currentUserData.push(fallbackData);
-                    this.addUserCard(fallbackData);
+                    await this.addUserCard(fallbackData);
                 }
             }
             // Cache the complete data
@@ -220,8 +221,8 @@ export class UIManager {
     /**
      * Add a new user card to the container
      */
-    addUserCard(userWeatherData) {
-        const card = UserCardRenderer.createUserCard(userWeatherData);
+    async addUserCard(userWeatherData) {
+        const card = await UserCardRenderer.createUserCard(userWeatherData);
         this.userCardsContainer.appendChild(card);
     }
     /**

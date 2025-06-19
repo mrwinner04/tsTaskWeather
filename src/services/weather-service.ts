@@ -12,9 +12,6 @@ import { Logger } from "../utils/logger.js";
  * Service for handling weather-related API operations
  */
 export class WeatherService {
-  /**
-   * Get current weather for given coordinates
-   */
   static async getCurrentWeather(
     lat: number,
     lng: number

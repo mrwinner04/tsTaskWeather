@@ -1,17 +1,17 @@
 import { UserUtils } from "../services/user.types.js";
 import { WeatherService } from "../services/weather-service.js";
+import { GeocodingService } from "../services/geocoding-service.js";
 import { Logger } from "../utils/logger.js";
-/**
- * Converter for transforming user data to combined user-weather data
- */
 export class UserWeatherConverter {
     /**
      * Convert a user to user-weather data by fetching weather for their location
      */
     static async convertUserToUserWeatherData(user) {
         try {
-            const coordinates = UserUtils.getCoordinates(user);
-            const weather = await WeatherService.getCurrentWeather(coordinates.lat, coordinates.lng);
+            // Get coordinates using the geocoding service
+            const locationQuery = UserUtils.getLocationQuery(user);
+            const geocodingResult = await GeocodingService.getCoordinates(locationQuery);
+            const weather = await WeatherService.getCurrentWeather(geocodingResult.lat, geocodingResult.lng);
             return {
                 user,
                 weather,

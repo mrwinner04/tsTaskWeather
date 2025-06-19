@@ -78,7 +78,7 @@ export class UIManager {
       );
       if (cachedWeatherData) {
         Logger.info("📦 Found cached weather data");
-        this.renderFromCache(cachedUsers, cachedWeatherData);
+        await this.renderFromCache(cachedUsers, cachedWeatherData);
 
         // Start auto-refresh
         this.autoRefreshManager.start();
@@ -100,23 +100,24 @@ export class UIManager {
   /**
    * Render UI from cached data
    */
-  private renderFromCache(
+  private async renderFromCache(
     users: User[],
     weatherDataArray: WeatherData[]
-  ): void {
+  ): Promise<void> {
     this.clearUserCards();
     this.currentUserData = [];
 
-    users.forEach((user, index) => {
-      const weatherData = weatherDataArray[index] || null;
+    for (let i = 0; i < users.length; i++) {
+      const user = users[i];
+      const weatherData = weatherDataArray[i] || null;
 
       const userWeatherData: UserWeatherData = {
         user,
         weather: weatherData,
       };
       this.currentUserData.push(userWeatherData);
-      this.addUserCard(userWeatherData);
-    });
+      await this.addUserCard(userWeatherData);
+    }
 
     Logger.success(`✅ Rendered ${users.length} users from cache`);
   }
@@ -141,7 +142,7 @@ export class UIManager {
           const userWeatherData =
             await UserWeatherConverter.convertUserToUserWeatherData(user);
           this.currentUserData.push(userWeatherData);
-          this.addUserCard(userWeatherData);
+          await this.addUserCard(userWeatherData);
         } catch (error) {
           Logger.error("Error processing user:", error);
           const fallbackData: UserWeatherData = {
@@ -149,7 +150,7 @@ export class UIManager {
             weather: null,
           };
           this.currentUserData.push(fallbackData);
-          this.addUserCard(fallbackData);
+          await this.addUserCard(fallbackData);
         }
       }
 
@@ -288,8 +289,8 @@ export class UIManager {
   /**
    * Add a new user card to the container
    */
-  private addUserCard(userWeatherData: UserWeatherData): void {
-    const card = UserCardRenderer.createUserCard(userWeatherData);
+  private async addUserCard(userWeatherData: UserWeatherData): Promise<void> {
+    const card = await UserCardRenderer.createUserCard(userWeatherData);
     this.userCardsContainer.appendChild(card);
   }
 

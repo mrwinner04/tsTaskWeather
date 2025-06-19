@@ -1,4 +1,3 @@
-// User data structure - simple interface for API data
 export interface User {
   name: {
     first: string;
@@ -7,17 +6,13 @@ export interface User {
   location: {
     city: string;
     country: string;
-    coordinates: {
-      latitude: string;
-      longitude: string;
-    };
   };
   picture: {
     large: string;
   };
 }
 
-// Utility functions for user operations
+// Pure utility functions for user data operations (no API calls)
 export class UserUtils {
   // Get full name from user data
   static getFullName(user: User): string {
@@ -29,11 +24,8 @@ export class UserUtils {
     return `${user.location.city}, ${user.location.country}`;
   }
 
-  // Extract coordinates as numbers for weather API calls
-  static getCoordinates(user: User): { lat: number; lng: number } {
-    return {
-      lat: parseFloat(user.location.coordinates.latitude),
-      lng: parseFloat(user.location.coordinates.longitude),
-    };
+  // Get search query string for geocoding services
+  static getLocationQuery(user: User): string {
+    return `${user.location.city}, ${user.location.country}`;
   }
 }

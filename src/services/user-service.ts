@@ -9,18 +9,14 @@ import { Logger } from "../utils/logger.js";
  * Service for handling user-related API operations
  */
 export class UserService {
-  /**
-   * Fetch fresh users from the API
-   */
   static async fetchFreshUsers(
     count: number = APP_CONSTANTS.DEFAULT_USER_COUNT
   ): Promise<User[]> {
-    // Clear cached users before fetching fresh ones
     CacheManager.removeItem(CacheManager.CACHE_KEYS.USERS);
 
     return await RetryHelper.retryApiCall(
       async () => {
-        const url = `https://randomuser.me/api/?results=${count}`;
+        const url = `https://randomuser.me/api/?results=${count}&inc=name,location,picture`;
         const data = await APIHelper.fetchData<{ results: User[] }>(
           url,
           "Failed to fetch users"

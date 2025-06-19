@@ -1,20 +1,35 @@
 import { UserUtils } from "../services/user.types.js";
+import { GeocodingService } from "../services/geocoding-service.js";
 /**
- * Class for rendering user cards with weather information
+ * Handles rendering of user cards in the UI
  */
 export class UserCardRenderer {
     /**
-     * Create a new user card element
+     * Create a user card element with weather information
      */
-    static createUserCard(userWeatherData) {
+    static async createUserCard(userWeatherData) {
         const card = document.createElement("div");
         card.className = "user-card";
-        const coords = UserUtils.getCoordinates(userWeatherData.user);
-        card.dataset.lat = coords.lat.toString();
-        card.dataset.lng = coords.lng.toString();
+        try {
+            // Get coordinates using the dedicated geocoding service
+            const locationQuery = UserUtils.getLocationQuery(userWeatherData.user);
+            const geocodingResult = await GeocodingService.getCoordinates(locationQuery);
+            card.dataset.lat = geocodingResult.lat.toString();
+            card.dataset.lng = geocodingResult.lng.toString();
+        }
+        catch (error) {
+            console.error("Failed to get coordinates for user card:", error);
+            // Set fallback coordinates (will cause weather refresh to fail gracefully)
+            card.dataset.lat = "0";
+            card.dataset.lng = "0";
+        }
         card.innerHTML = `
       <div class="user-card__header">
-        <img src="${userWeatherData.user.picture.large}" alt="User avatar" class="user-card__avatar">
+        <img 
+          src="${userWeatherData.user.picture.large}" 
+          alt="User avatar" 
+          class="user-card__avatar"
+        >
         <h2 class="user-card__name">${UserUtils.getFullName(userWeatherData.user)}</h2>
         <div class="user-card__location">${UserUtils.getLocationDisplay(userWeatherData.user)}</div>
       </div>
@@ -25,7 +40,7 @@ export class UserCardRenderer {
         return card;
     }
     /**
-     * Update weather information in a user card
+     * Update weather information in an existing card
      */
     static updateWeatherInfo(card, weather) {
         const weatherContainer = card.querySelector(".user-card__weather");

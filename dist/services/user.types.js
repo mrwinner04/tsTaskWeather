@@ -1,4 +1,4 @@
-// Utility functions for user operations
+// Pure utility functions for user data operations (no API calls)
 export class UserUtils {
     // Get full name from user data
     static getFullName(user) {
@@ -8,12 +8,9 @@ export class UserUtils {
     static getLocationDisplay(user) {
         return `${user.location.city}, ${user.location.country}`;
     }
-    // Extract coordinates as numbers for weather API calls
-    static getCoordinates(user) {
-        return {
-            lat: parseFloat(user.location.coordinates.latitude),
-            lng: parseFloat(user.location.coordinates.longitude),
-        };
+    // Get search query string for geocoding services
+    static getLocationQuery(user) {
+        return `${user.location.city}, ${user.location.country}`;
     }
 }
 //# sourceMappingURL=user.types.js.map

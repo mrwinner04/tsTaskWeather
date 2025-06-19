@@ -2,6 +2,7 @@
 export const API_CONFIG = {
     RANDOM_USER_URL: "https://randomuser.me/api",
     WEATHER_URL: "https://api.open-meteo.com/v1/forecast",
+    OPENCAGE_API_KEY: "3803866026c549029cf824e5f3719082",
     CACHE_DURATION: 30 * 60 * 1000, // 30 minutes in milliseconds
 };
 // Application constants
